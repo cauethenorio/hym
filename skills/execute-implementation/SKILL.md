@@ -1,13 +1,13 @@
 ---
 name: execute-implementation
-description: Use when you have an approved implementation plan and are ready to start coding. Use after write-implementation-plan to execute step by step with review checkpoints.
+description: Use when you have an approved implementation plan and are ready to start coding. Use after write-implementation-plan. Dispatches fresh subagents per task with two-stage review.
 ---
 
 # Execute Implementation
 
-## Overview
+Execute the implementation plan by dispatching a fresh subagent per task, with two-stage review after each: spec compliance review first, then code quality review.
 
-Execute the implementation plan step by step, with review checkpoints. Follow the plan, verify each step, and update living documents as decisions evolve.
+**Core principle:** Fresh subagent per task + two-stage review (spec then quality) = high quality, fast iteration
 
 ## Before Anything Else
 
@@ -16,52 +16,208 @@ Execute the implementation plan step by step, with review checkpoints. Follow th
 3. Read CLAUDE.md and `.claude/project-instructions/execute-implementation.md` if it exists
    - These instructions are ADDITIVE — they do not replace this skill
 
-## Process
+## The Process
 
-For each step in the plan:
+```dot
+digraph process {
+    rankdir=TB;
 
-1. **Mark as in progress**
-   - Tell the dev which step you're working on
+    subgraph cluster_per_task {
+        label="Per Task";
+        "Dispatch implementer subagent (./implementer-prompt.md)" [shape=box];
+        "Implementer subagent asks questions?" [shape=diamond];
+        "Answer questions, provide context" [shape=box];
+        "Implementer subagent implements, tests, commits, self-reviews" [shape=box];
+        "Dispatch spec reviewer subagent (./spec-reviewer-prompt.md)" [shape=box];
+        "Spec reviewer subagent confirms code matches spec?" [shape=diamond];
+        "Implementer subagent fixes spec gaps" [shape=box];
+        "Dispatch code quality reviewer subagent (./code-quality-reviewer-prompt.md)" [shape=box];
+        "Code quality reviewer subagent approves?" [shape=diamond];
+        "Implementer subagent fixes quality issues" [shape=box];
+        "Mark task complete via TaskUpdate" [shape=box];
+    }
 
-2. **Implement**
-   - Follow the step's instructions
-   - Write tests as specified in the plan
-   - If you need to deviate from the plan, tell the dev why before proceeding
+    "Read plan, extract all tasks with full text, note context, create tasks via TaskCreate" [shape=box];
+    "More tasks remain?" [shape=diamond];
+    "Dispatch final code quality reviewer subagent for entire implementation" [shape=box];
 
-3. **Verify**
-   - Run tests
-   - Run lint/build if applicable
-   - Confirm the step works as expected
+    "Read plan, extract all tasks with full text, note context, create tasks via TaskCreate" -> "Dispatch implementer subagent (./implementer-prompt.md)";
+    "Dispatch implementer subagent (./implementer-prompt.md)" -> "Implementer subagent asks questions?";
+    "Implementer subagent asks questions?" -> "Answer questions, provide context" [label="yes"];
+    "Answer questions, provide context" -> "Dispatch implementer subagent (./implementer-prompt.md)";
+    "Implementer subagent asks questions?" -> "Implementer subagent implements, tests, commits, self-reviews" [label="no"];
+    "Implementer subagent implements, tests, commits, self-reviews" -> "Dispatch spec reviewer subagent (./spec-reviewer-prompt.md)";
+    "Dispatch spec reviewer subagent (./spec-reviewer-prompt.md)" -> "Spec reviewer subagent confirms code matches spec?";
+    "Spec reviewer subagent confirms code matches spec?" -> "Implementer subagent fixes spec gaps" [label="no"];
+    "Implementer subagent fixes spec gaps" -> "Dispatch spec reviewer subagent (./spec-reviewer-prompt.md)" [label="re-review"];
+    "Spec reviewer subagent confirms code matches spec?" -> "Dispatch code quality reviewer subagent (./code-quality-reviewer-prompt.md)" [label="yes"];
+    "Dispatch code quality reviewer subagent (./code-quality-reviewer-prompt.md)" -> "Code quality reviewer subagent approves?";
+    "Code quality reviewer subagent approves?" -> "Implementer subagent fixes quality issues" [label="no"];
+    "Implementer subagent fixes quality issues" -> "Dispatch code quality reviewer subagent (./code-quality-reviewer-prompt.md)" [label="re-review"];
+    "Code quality reviewer subagent approves?" -> "Mark task complete via TaskUpdate" [label="yes"];
+    "Mark task complete via TaskUpdate" -> "More tasks remain?";
+    "More tasks remain?" -> "Dispatch implementer subagent (./implementer-prompt.md)" [label="yes"];
+    "More tasks remain?" -> "Dispatch final code quality reviewer subagent for entire implementation" [label="no"];
+    "Dispatch final code quality reviewer subagent for entire implementation" -> "Run hym:verify-before-completing";
+    "Run hym:verify-before-completing" [shape=box];
+    "Run hym:verify-before-completing" -> "Suggest hym:open-pr";
+    "Suggest hym:open-pr" [shape=box style=filled fillcolor=lightgreen];
+}
+```
 
-4. **Checkpoint**
-   - For significant steps, pause and show the dev what was done
-   - Ask if it looks right before continuing
-   - Not every step needs a checkpoint — use judgment
+## Prompt Templates
 
-5. **Update living documents**
-   - If decisions changed during implementation, update `active-plan/rfc.md`
-   - Mark the step as completed in the plan
+- `./implementer-prompt.md` - Dispatch implementer subagent
+- `./spec-reviewer-prompt.md` - Dispatch spec compliance reviewer subagent
+- `./code-quality-reviewer-prompt.md` - Dispatch code quality reviewer subagent
 
-## When to Stop and Ask
+## Example Workflow
 
-- The plan doesn't cover something you encountered
-- You disagree with a step in the plan
-- Tests are failing and you're not sure why
-- A step is significantly more complex than expected
-- You discovered something that changes the design
+```
+You: I'm using Execute Implementation to execute this plan.
 
-## When All Steps Are Complete
+[Read plan file once: active-plan/implementation-plan.md]
+[Extract all 5 tasks with full text and context]
+[Create tasks via TaskCreate]
 
-After executing every step in the plan:
+Task 1: Hook installation script
 
-1. Invoke `hym:verify-before-completing` to check acceptance criteria against the RFC
-2. If verification passes → suggest `hym:open-pr` to the dev
-3. If verification fails → fix the issues before suggesting the PR
+[Get Task 1 text and context (already extracted)]
+[Dispatch implementation subagent with full task text + context]
 
-## Key Principles
+Implementer: "Before I begin - should the hook be installed at user or system level?"
 
-- **Follow the plan** — don't improvise unless necessary
-- **Verify before moving on** — each step should pass before the next begins
-- **Communicate deviations** — if you change something, say so
-- **Update the RFC** — if reality differs from the plan, keep the RFC current
-- **Small commits** — commit after each step or logical unit of work
+You: "User level (~/.config/hooks/)"
+
+Implementer: "Got it. Implementing now..."
+[Later] Implementer:
+  - Implemented install-hook command
+  - Added tests, 5/5 passing
+  - Self-review: Found I missed --force flag, added it
+  - Committed
+
+[Dispatch spec compliance reviewer]
+Spec reviewer: Spec compliant - all requirements met, nothing extra
+
+[Get git SHAs, dispatch code quality reviewer]
+Code reviewer: Strengths: Good test coverage, clean. Issues: None. Approved.
+
+[Mark Task 1 complete via TaskUpdate]
+
+Task 2: Recovery modes
+
+[Get Task 2 text and context (already extracted)]
+[Dispatch implementation subagent with full task text + context]
+
+Implementer: [No questions, proceeds]
+Implementer:
+  - Added verify/repair modes
+  - 8/8 tests passing
+  - Self-review: All good
+  - Committed
+
+[Dispatch spec compliance reviewer]
+Spec reviewer: Issues:
+  - Missing: Progress reporting (spec says "report every 100 items")
+  - Extra: Added --json flag (not requested)
+
+[Implementer fixes issues]
+Implementer: Removed --json flag, added progress reporting
+
+[Spec reviewer reviews again]
+Spec reviewer: Spec compliant now
+
+[Dispatch code quality reviewer]
+Code reviewer: Strengths: Solid. Issues (Important): Magic number (100)
+
+[Implementer fixes]
+Implementer: Extracted PROGRESS_INTERVAL constant
+
+[Code reviewer reviews again]
+Code reviewer: Approved
+
+[Mark Task 2 complete via TaskUpdate]
+
+...
+
+[After all tasks]
+[Dispatch final code quality reviewer for entire implementation]
+Final reviewer: All requirements met, ready to merge
+
+Done! Invoking hym:verify-before-completing to check acceptance criteria...
+
+[Verify passes]
+
+Implementation is verified and ready. Suggest: open the PR with `hym:open-pr`.
+```
+
+## Advantages
+
+- Subagents follow TDD naturally
+- Fresh context per task (no confusion or context pollution)
+- Parallel-safe (subagents don't interfere)
+- Subagent can ask questions (before AND during work)
+- Continuous progress with automatic review checkpoints
+
+**Efficiency gains:**
+- No file reading overhead (controller provides full text)
+- Controller curates exactly what context is needed
+- Subagent gets complete information upfront
+- Questions surfaced before work begins (not after)
+
+**Quality gates:**
+- Self-review catches issues before handoff
+- Two-stage review: spec compliance, then code quality
+- Review loops ensure fixes actually work
+- Spec compliance prevents over/under-building
+- Code quality ensures implementation is well-built
+
+**Cost:**
+- More subagent invocations (implementer + 2 reviewers per task)
+- Controller does more prep work (extracting all tasks upfront)
+- Review loops add iterations
+- But catches issues early (cheaper than debugging later)
+
+## Red Flags
+
+**Never:**
+- Start implementation on main/master branch without explicit user consent
+- Skip reviews (spec compliance OR code quality)
+- Proceed with unfixed issues
+- Dispatch multiple implementation subagents in parallel (conflicts)
+- Make subagent read plan file (provide full text instead)
+- Skip scene-setting context (subagent needs to understand where task fits)
+- Ignore subagent questions (answer before letting them proceed)
+- Accept "close enough" on spec compliance (spec reviewer found issues = not done)
+- Skip review loops (reviewer found issues = implementer fixes = review again)
+- Let implementer self-review replace actual review (both are needed)
+- **Start code quality review before spec compliance passes** (wrong order)
+- Move to next task while either review has open issues
+
+**If subagent asks questions:**
+- Answer clearly and completely
+- Provide additional context if needed
+- Don't rush them into implementation
+
+**If reviewer finds issues:**
+- Implementer (same subagent) fixes them
+- Reviewer reviews again
+- Repeat until approved
+- Don't skip the re-review
+
+**If subagent fails task:**
+- Dispatch fix subagent with specific instructions
+- Don't try to fix manually (context pollution)
+
+## Integration
+
+**Required workflow skills:**
+- **hym:write-implementation-plan** - Creates the plan this skill executes
+- **hym:verify-before-completing** - Invoked internally after all tasks to check acceptance criteria
+
+**Suggested next step:**
+- **hym:open-pr** - Open a pull request after verification passes
+
+**Subagents should use:**
+- **hym:develop-tdd** - Subagents follow TDD for each task
+

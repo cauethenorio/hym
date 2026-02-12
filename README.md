@@ -72,11 +72,7 @@ start-work
 ├── create-ticket                        (if no ticket exists)
 └── write-task-rfc                       → produces active-plan/rfc.md
     └── write-implementation-plan        → produces active-plan/implementation-plan.md
-        ├── execute-implementation       (step by step from the plan)
-        │   ├── develop-tdd              (per step, when writing new code)
-        │   ├── debug-systematically     (per step, when something fails)
-        │   └── verify-before-completing (internal, after all steps)
-        └── execute-with-subagents       (fresh subagent per task + two-stage review)
+        └── execute-implementation       (fresh subagent per task + two-stage review)
             ├── develop-tdd              (per task, when writing new code)
             ├── debug-systematically     (per task, when something fails)
             └── verify-before-completing (internal, after all tasks + final review)
@@ -92,10 +88,10 @@ start-work
 
 ```
 rfc.md ──────────────→ write-implementation-plan, execute-implementation,
-                       execute-with-subagents, verify-before-completing,
+                       verify-before-completing,
                        open-pr, generate-qa-steps
 
-implementation-plan.md → execute-implementation, execute-with-subagents,
+implementation-plan.md → execute-implementation,
                          verify-before-completing, generate-qa-steps
 
 qa-steps.md ──────────→ open-pr (attached to PR description)
@@ -134,13 +130,12 @@ All artifacts live in `active-plan/` and are removed by `wrap-up` after merge.
 
 ### Implementation
 
-| Skill                        | Purpose                                                                                                                             |
-| ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
-| `hym:execute-implementation` | Execute the plan step by step with review checkpoints. Best for tightly coupled steps.                                              |
-| `hym:execute-with-subagents` | Execute the plan using fresh subagents per task with two-stage review (spec compliance + code quality). Best for independent tasks. |
-| `hym:develop-tdd`            | Write tests first, then implementation, then refactor. Usable standalone or during plan execution.                                  |
-| `hym:debug-systematically`   | Investigate bugs with structure — hypothesis, evidence, root cause, fix, verify. Usable standalone.                                 |
-| `hym:commit`                 | Create clean, atomic commits following project conventions.                                                                         |
+| Skill                        | Purpose                                                                                                                                  |
+| ---------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| `hym:execute-implementation` | Execute the plan using fresh subagents per task with two-stage review (spec compliance + code quality). Dispatches one task at a time.   |
+| `hym:develop-tdd`            | Write tests first, then implementation, then refactor. Usable standalone or during plan execution.                                       |
+| `hym:debug-systematically`   | Investigate bugs with structure — hypothesis, evidence, root cause, fix, verify. Usable standalone.                                      |
+| `hym:commit`                 | Create clean, atomic commits following project conventions.                                                                              |
 
 ### Review & Quality
 
@@ -158,30 +153,6 @@ All artifacts live in `active-plan/` and are removed by `wrap-up` after merge.
 | `hym:wrap-up`              | Clean up after merge — remove `active-plan/`, delete branch.               |
 | `hym:announce-release`     | Create a concise release summary message for team communication.           |
 | `hym:draft-release-thread` | Create a detailed per-ticket Slack thread explaining each change's impact. |
-
-## Execution Strategies
-
-Hym offers two ways to execute an implementation plan:
-
-### Execute Implementation (inline)
-
-`hym:execute-implementation` — Executes steps sequentially in the current session with developer checkpoints between significant steps.
-
-**Best for:** Tightly coupled changes, tasks requiring ongoing developer input, smaller plans.
-
-### Execute with Subagents
-
-`hym:execute-with-subagents` — Dispatches a fresh subagent per task with a two-stage review process after each: spec compliance review first, then code quality review.
-
-**Best for:** Plans with independent tasks, larger implementations, when you want automated quality gates.
-
-**The review process:**
-
-1. Implementer subagent builds and tests the task
-2. Spec reviewer checks code matches the plan requirements
-3. Code quality reviewer checks implementation quality
-4. If either reviewer finds issues, the implementer fixes and re-review happens
-5. After all tasks: final cross-task quality review + `verify-before-completing`
 
 ## Configuration
 
@@ -248,7 +219,6 @@ This project uses Hym to guide the development cycle.
         write-task-rfc/
         write-implementation-plan/
         execute-implementation/
-        execute-with-subagents/
         develop-tdd/
         debug-systematically/
         commit/

@@ -59,9 +59,7 @@ Date: [YYYY-MM-DD]
 
 ## Next Step
 
-After the plan is saved and approved, suggest the execution strategy:
-- Tasks are mostly independent → `hym:execute-with-subagents`
-- Tasks are tightly coupled → `hym:execute-implementation`
+After the plan is saved and approved, suggest `hym:execute-implementation` to start execution.
 
 ## Key Principles
 

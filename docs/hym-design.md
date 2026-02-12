@@ -294,17 +294,19 @@ Status: active
 
 #### hym:execute-implementation
 
-**Purpose:** Execute the implementation plan step by step, with review checkpoints.
+**Purpose:** Execute the implementation plan by dispatching fresh subagents per task with two-stage review (spec compliance + code quality).
 
 **Flow:**
 1. Read `active-plan/implementation-plan.md` and project instructions
-2. For each step in the plan:
-   - Mark as in progress
-   - Implement
-   - Verify (tests, lint, build)
-   - Checkpoint with the dev if the step is significant
-3. Update `active-plan/rfc.md` if decisions change during implementation
-4. Mark steps as completed
+2. For each task in the plan:
+   - Dispatch implementer subagent with full task text and context
+   - Implementer builds, tests, and commits
+   - Dispatch spec reviewer subagent — verify code matches plan requirements
+   - Dispatch code quality reviewer subagent — verify implementation quality
+   - If reviewers find issues, implementer fixes and re-review loops until approved
+3. After all tasks: final cross-task quality review
+4. Invoke `hym:verify-before-completing` to check acceptance criteria
+5. Update `active-plan/rfc.md` if decisions change during implementation
 
 **Inputs:** Existing implementation plan
 **Outputs:** Implemented code, updated plan

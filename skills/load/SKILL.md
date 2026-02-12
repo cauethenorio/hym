@@ -35,11 +35,7 @@ start-work
 ├── create-ticket                        (if no ticket exists)
 └── write-task-rfc                       → produces active-plan/rfc.md
     └── write-implementation-plan        → produces active-plan/implementation-plan.md
-        ├── execute-implementation       (step by step from the plan)
-        │   ├── develop-tdd              (per step, when writing new code)
-        │   ├── debug-systematically     (per step, when something fails)
-        │   └── verify-before-completing (internal, after all steps)
-        └── execute-with-subagents      (fresh subagent per task + two-stage review)
+        └── execute-implementation       (fresh subagent per task + two-stage review)
             ├── develop-tdd              (per task, when writing new code)
             ├── debug-systematically     (per task, when something fails)
             └── verify-before-completing (internal, after all tasks + final review)
@@ -75,10 +71,10 @@ onboard
 
 ```
 rfc.md ──────────────→ write-implementation-plan, execute-implementation,
-                       execute-with-subagents, verify-before-completing,
+                       verify-before-completing,
                        open-pr, generate-qa-steps
 
-implementation-plan.md → execute-implementation, execute-with-subagents,
+implementation-plan.md → execute-implementation,
                          verify-before-completing, generate-qa-steps
 
 qa-steps.md ──────────→ open-pr (attached to PR description)
