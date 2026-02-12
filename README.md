@@ -291,6 +291,26 @@ This project uses Hym to guide the development cycle.
 5. **Skills can invoke other skills** — context carries forward through conversation history
 6. **Start small** — add project instructions as you feel the need; Hym works without any
 
+## Hym vs. Superpowers
+
+Hym was heavily inspired by [Superpowers](https://github.com/obra/superpowers). Several Hym skills — brainstorming, subagent-driven development, systematic debugging, TDD, verification before completion — trace their lineage directly to Superpowers. If you haven't looked at Superpowers, you should.
+
+That said, the two projects have different goals and make different trade-offs.
+
+### Shared Ground
+
+Both projects believe that AI agents produce better work when guided by structured workflows rather than left to improvise. Both enforce planning before coding, test-driven development, systematic debugging, verification before claiming completion, and code review. Both offer subagent-driven execution with spec and quality review stages.
+
+### Where They Differ
+
+**Scope of the lifecycle.** Superpowers covers brainstorm-through-merge: design, plan, execute, test, review, finish the branch. Hym extends the lifecycle in both directions — earlier (ticket creation, onboarding, codebase exploration) and later (QA step generation, PR feedback loops, post-merge cleanup, release announcements). Superpowers is laser-focused on the engineering cycle; Hym treats development as a broader process that includes project management and team communication.
+
+**Skills library vs. workflow system.** Superpowers skills are independent units that chain through convention — each skill recommends the next, but there's no formal orchestration. Hym defines an explicit workflow with a dependency graph and artifact pipeline. Skills produce named artifacts (`active-plan/rfc.md`, `active-plan/implementation-plan.md`, `active-plan/qa-steps.md`) that are consumed by downstream skills and cleaned up after merge. This makes Hym more opinionated about the order of operations but also more predictable.
+
+**Tool integration.** Superpowers stays within the git-and-code boundary — it doesn't address how to interact with issue trackers, databases, browsers, or messaging tools. Hym separates workflow skills (what to do) from tool skills (how to do it with Linear, MongoDB Atlas, Playwright, Slack, etc.), letting project instructions wire them together. This makes Hym more adaptable to different toolchains but also more complex to configure.
+
+**Customization model.** Superpowers relies on CLAUDE.md conventions and the agent's skill-checking behavior. Hym provides a formal `project-instructions/` directory where per-skill files enrich (never override) the global skill behavior, giving each project fine-grained control over how skills adapt to its context.
+
 ## References
 
 - [Superpowers](https://github.com/obra/superpowers) — A collection of skills and techniques for getting the most out of Claude Code
