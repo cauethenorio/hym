@@ -1,0 +1,11 @@
+{
+  "name": "hym",
+  "description": "Your development companion — composable skills that guide every phase of the development cycle",
+  "version": "0.1.0",
+  "author": {
+    "name": "Caue"
+  },
+  "repository": "https://github.com/caue/hym",
+  "license": "MIT",
+  "keywords": ["skills", "workflow", "development-cycle", "rfc", "implementation", "qa"]
+}
