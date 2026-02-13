@@ -1,6 +1,6 @@
 ---
 name: write-task-recipe
-description: Use when you have an approved blueprint and need to create a detailed technical recipe before coding. Use after write-task-blueprint and before execute-implementation.
+description: Use when you have an approved blueprint and need to create a detailed technical recipe before coding. Use after write-task-blueprint and before follow-recipe.
 ---
 
 # Task Recipe
@@ -60,7 +60,7 @@ Date: [YYYY-MM-DD]
 
 ## Next Step
 
-After the recipe is saved and approved, suggest `hym:execute-implementation` to start execution.
+After the recipe is saved and approved, suggest `hym:follow-recipe` to start execution.
 
 ## Key Principles
 

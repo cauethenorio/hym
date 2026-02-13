@@ -66,7 +66,7 @@ Hym produces three artifacts during a task's lifecycle. Each one builds on the p
 #### 1. `tasks/current/blueprint.md` — The Design Document
 
 **Produced by:** `write-task-blueprint`
-**Consumed by:** `write-task-recipe`, `execute-implementation`, `verify-before-completing`, `open-pr`, `generate-qa-steps`
+**Consumed by:** `write-task-recipe`, `follow-recipe`, `verify-work`, `open-pr`, `generate-qa-steps`
 
 A lightweight blueprint (1-2 pages) that aligns direction before coding. Contains:
 
@@ -81,7 +81,7 @@ This is a living document — it gets updated during implementation as understan
 #### 2. `tasks/current/recipe.md` — The Execution Playbook
 
 **Produced by:** `write-task-recipe`
-**Consumed by:** `execute-implementation`, `verify-before-completing`, `generate-qa-steps`
+**Consumed by:** `follow-recipe`, `verify-work`, `generate-qa-steps`
 
 Turns the blueprint's "what to build" into ordered, concrete steps — which files to create/modify, what tests to write, in what order. Each step is:
 
@@ -90,7 +90,7 @@ Turns the blueprint's "what to build" into ordered, concrete steps — which fil
 - **Ordered by dependency** — steps that depend on others come after
 - **Small** — completable in one sitting
 
-This is what `execute-implementation` dispatches to subagents — one step at a time, each reviewed for spec compliance and code quality before moving on.
+This is what `follow-recipe` dispatches to subagents — one step at a time, each reviewed for spec compliance and code quality before moving on.
 
 #### 3. `tasks/current/qa-steps.md` — The QA Testing Report
 
@@ -113,10 +113,10 @@ start-work
 ├── create-ticket                        (if no ticket exists)
 └── write-task-blueprint                 → produces tasks/current/blueprint.md
     └── write-task-recipe                → produces tasks/current/recipe.md
-        └── execute-implementation       (fresh subagent per task + two-stage review)
+        └── follow-recipe               (fresh subagent per task + two-stage review)
             ├── develop-tdd              (per task, when writing new code)
             ├── debug-systematically     (per task, when something fails)
-            └── verify-before-completing (internal, after all tasks + final review)
+            └── verify-work              (internal, after all tasks + final review)
             │
             └── open-pr                  ← reads blueprint.md + implemented code
                 └── generate-qa-steps    ← reads blueprint.md + recipe.md + git diff
@@ -159,7 +159,7 @@ start-work
 
 | Skill                        | Purpose                                                                                                                                  |
 | ---------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| `hym:execute-implementation` | Execute the plan using fresh subagents per task with two-stage review (spec compliance + code quality). Dispatches one task at a time.   |
+| `hym:follow-recipe`         | Execute the plan using fresh subagents per task with two-stage review (spec compliance + code quality). Dispatches one task at a time.   |
 | `hym:develop-tdd`            | Write tests first, then implementation, then refactor. Usable standalone or during plan execution.                                       |
 | `hym:debug-systematically`   | Investigate bugs with structure — hypothesis, evidence, root cause, fix, verify. Usable standalone.                                      |
 | `hym:commit`                 | Create clean, atomic commits following project conventions.                                                                              |
@@ -168,7 +168,7 @@ start-work
 
 | Skill                          | Purpose                                                                                      |
 | ------------------------------ | -------------------------------------------------------------------------------------------- |
-| `hym:verify-before-completing` | Final verification before declaring work complete — tests, build, lint, acceptance criteria. |
+| `hym:verify-work`              | Final verification before declaring work complete — tests, build, lint, acceptance criteria. |
 | `hym:open-pr`                  | Prepare and create a PR with blueprint context, QA steps, and reviewer attention points.     |
 | `hym:generate-qa-steps`        | Generate QA testing steps from the blueprint, recipe, and actual code changes.               |
 | `hym:address-pr-feedback`      | Process code review feedback with technical rigor — evaluate before implementing.            |
@@ -245,11 +245,11 @@ This project uses Hym to guide the development cycle.
         brainstorm/
         write-task-blueprint/
         write-task-recipe/
-        execute-implementation/
+        follow-recipe/
         develop-tdd/
         debug-systematically/
         commit/
-        verify-before-completing/
+        verify-work/
         open-pr/
         generate-qa-steps/
         address-pr-feedback/

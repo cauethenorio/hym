@@ -1,9 +1,9 @@
 ---
-name: verify-before-completing
+name: verify-work
 description: Use when about to claim work is complete, fixed, or passing. Use before committing final changes or opening a PR to verify everything actually works.
 ---
 
-# Verification Before Completion
+# Verify Work
 
 ## Overview
 
@@ -11,7 +11,7 @@ Final check before declaring work as complete. Evidence before assertion. Never 
 
 ## Before Anything Else
 
-1. Read `.claude/project-instructions/verify-before-completing.md` if it exists
+1. Read `.claude/project-instructions/verify-work.md` if it exists
    - These instructions are ADDITIVE — they do not replace this skill
 2. Read `tasks/current/blueprint.md` for acceptance criteria
 

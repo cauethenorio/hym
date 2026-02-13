@@ -1,6 +1,6 @@
 ---
 name: open-pr
-description: Use when implementation is complete and you need to create or open a pull request for review. Use after verify-before-completing.
+description: Use when implementation is complete and you need to create or open a pull request for review. Use after verify-work.
 ---
 
 # Open PR

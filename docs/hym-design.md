@@ -35,13 +35,13 @@
         brainstorm.md
         write-task-blueprint.md
         write-task-recipe.md
-        execute-implementation.md
+        follow-recipe.md
         develop-tdd.md
         debug-systematically.md
         open-pr.md
         generate-qa-steps.md
         address-pr-feedback.md
-        verify-before-completing.md
+        verify-work.md
         wrap-up.md
         deploy.md
         announce-release.md
@@ -301,7 +301,7 @@ Status: active
 
 ### Implementation
 
-#### hym:execute-implementation
+#### hym:follow-recipe
 
 **Purpose:** Execute the recipe by dispatching fresh subagents per task with two-stage review (spec compliance + code quality).
 
@@ -314,7 +314,7 @@ Status: active
    - Dispatch code quality reviewer subagent — verify implementation quality
    - If reviewers find issues, implementer fixes and re-review loops until approved
 3. After all tasks: final cross-task quality review
-4. Invoke `hym:verify-before-completing` to check acceptance criteria
+4. Invoke `hym:verify-work` to check acceptance criteria
 5. Update `tasks/current/blueprint.md` if decisions change during implementation
 
 **Inputs:** Existing recipe
@@ -426,7 +426,7 @@ Status: active
 
 ---
 
-#### hym:verify-before-completing
+#### hym:verify-work
 
 **Purpose:** Final check before declaring work as complete. Evidence before assertion.
 
@@ -629,10 +629,10 @@ hym:start-work
 - [ ] `hym:create-ticket`
 - [ ] `hym:write-task-blueprint`
 - [ ] `hym:write-task-recipe`
-- [ ] `hym:execute-implementation`
+- [ ] `hym:follow-recipe`
 - [ ] `hym:open-pr`
 - [ ] `hym:generate-qa-steps`
-- [ ] `hym:verify-before-completing`
+- [ ] `hym:verify-work`
 - [ ] `hym:wrap-up`
 
 ### v1.1 — Onboarding, learning & migrated skills

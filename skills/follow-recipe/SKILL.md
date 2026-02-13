@@ -1,9 +1,9 @@
 ---
-name: execute-implementation
+name: follow-recipe
 description: Use when you have an approved recipe and are ready to start coding. Use after write-task-recipe. Dispatches fresh subagents per task with two-stage review.
 ---
 
-# Execute Implementation
+# Follow Recipe
 
 Execute the recipe by dispatching a fresh subagent per task, with two-stage review after each: spec compliance review first, then code quality review.
 
@@ -13,7 +13,7 @@ Execute the recipe by dispatching a fresh subagent per task, with two-stage revi
 
 1. Read `tasks/current/recipe.md` — this is what you're executing
 2. Read `tasks/current/blueprint.md` — this is the context and acceptance criteria
-3. Read CLAUDE.md and `.claude/project-instructions/execute-implementation.md` if it exists
+3. Read CLAUDE.md and `.claude/project-instructions/follow-recipe.md` if it exists
    - These instructions are ADDITIVE — they do not replace this skill
 
 ## The Process
@@ -58,9 +58,9 @@ digraph process {
     "Mark task complete via TaskUpdate" -> "More tasks remain?";
     "More tasks remain?" -> "Dispatch implementer subagent (./implementer-prompt.md)" [label="yes"];
     "More tasks remain?" -> "Dispatch final code quality reviewer subagent for entire implementation" [label="no"];
-    "Dispatch final code quality reviewer subagent for entire implementation" -> "Run hym:verify-before-completing";
-    "Run hym:verify-before-completing" [shape=box];
-    "Run hym:verify-before-completing" -> "Suggest hym:open-pr";
+    "Dispatch final code quality reviewer subagent for entire implementation" -> "Run hym:verify-work";
+    "Run hym:verify-work" [shape=box];
+    "Run hym:verify-work" -> "Suggest hym:open-pr";
     "Suggest hym:open-pr" [shape=box style=filled fillcolor=lightgreen];
 }
 ```
@@ -74,7 +74,7 @@ digraph process {
 ## Example Workflow
 
 ```
-You: I'm using Execute Implementation to execute this plan.
+You: I'm using Follow Recipe to execute this plan.
 
 [Read plan file once: tasks/current/recipe.md]
 [Extract all 5 tasks with full text and context]
@@ -144,7 +144,7 @@ Code reviewer: Approved
 [Dispatch final code quality reviewer for entire implementation]
 Final reviewer: All requirements met, ready to merge
 
-Done! Invoking hym:verify-before-completing to check acceptance criteria...
+Done! Invoking hym:verify-work to check acceptance criteria...
 
 [Verify passes]
 
@@ -213,7 +213,7 @@ Implementation is verified and ready. Suggest: open the PR with `hym:open-pr`.
 
 **Required workflow skills:**
 - **hym:write-task-recipe** - Creates the recipe this skill executes
-- **hym:verify-before-completing** - Invoked internally after all tasks to check acceptance criteria
+- **hym:verify-work** - Invoked internally after all tasks to check acceptance criteria
 
 **Suggested next step:**
 - **hym:open-pr** - Open a pull request after verification passes

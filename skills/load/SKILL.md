@@ -35,10 +35,10 @@ start-work
 ├── create-ticket                        (if no ticket exists)
 └── write-task-blueprint                 → produces tasks/current/blueprint.md
     └── write-task-recipe                → produces tasks/current/recipe.md
-        └── execute-implementation       (fresh subagent per task + two-stage review)
+        └── follow-recipe               (fresh subagent per task + two-stage review)
             ├── develop-tdd              (per task, when writing new code)
             ├── debug-systematically     (per task, when something fails)
-            └── verify-before-completing (internal, after all tasks + final review)
+            └── verify-work              (internal, after all tasks + final review)
             │
             └── open-pr                  ← reads blueprint.md + implemented code
                 └── generate-qa-steps    ← reads blueprint.md + recipe.md + git diff
@@ -70,12 +70,12 @@ onboard
 ### Artifact Flow
 
 ```
-blueprint.md ─────────→ write-task-recipe, execute-implementation,
-                        verify-before-completing,
+blueprint.md ─────────→ write-task-recipe, follow-recipe,
+                        verify-work,
                         open-pr, generate-qa-steps
 
-recipe.md ────────────→ execute-implementation,
-                        verify-before-completing, generate-qa-steps
+recipe.md ────────────→ follow-recipe,
+                        verify-work, generate-qa-steps
 
 qa-steps.md ──────────→ open-pr (attached to PR description)
 ```
