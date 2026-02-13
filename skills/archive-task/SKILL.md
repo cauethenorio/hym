@@ -1,9 +1,9 @@
 ---
-name: wrap-up
+name: archive-task
 description: Use when a PR has been merged and you need to archive task artifacts, clean up the development branch, and finalize the task.
 ---
 
-# Wrap Up
+# Archive Task
 
 ## Overview
 
@@ -11,7 +11,7 @@ Finalize work on a development branch after merge. Archive artifacts to institut
 
 ## Before Anything Else
 
-1. Read `.claude/project-instructions/wrap-up.md` if it exists
+1. Read `.claude/project-instructions/archive-task.md` if it exists
    - These instructions are ADDITIVE — they do not replace this skill
 
 ## Process
@@ -32,7 +32,7 @@ Finalize work on a development branch after merge. Archive artifacts to institut
      - `TICKET` is the ticket identifier (e.g., `PROJ-123`)
      - `short-name` is a 2-4 word slug derived from the task title (e.g., `add-user-auth`)
    - Create the archive directory
-   - Move all files from `tasks/current/` into the archive directory:
+   - Use `git mv` to move all files from `tasks/current/` into the archive directory (preserves git history):
      - `summary.md`
      - `blueprint.md`
      - `recipe.md`

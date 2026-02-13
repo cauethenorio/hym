@@ -44,7 +44,7 @@ start-work
                 └── generate-qa-steps    ← reads blueprint.md + recipe.md + git diff
                 │
                 └── address-pr-feedback  (loop until approved)
-                    └── wrap-up          ← merged PR → archives tasks/current/ to tasks/archive/, deletes branch
+                    └── archive-task     ← merged PR → archives tasks/current/ to tasks/archive/, deletes branch
 ```
 
 ### After Deploy
@@ -80,7 +80,7 @@ recipe.md ────────────→ follow-recipe,
 qa-steps.md ──────────→ open-pr (attached to PR description)
 ```
 
-All artifacts live in `tasks/current/` during active work and are archived to `tasks/archive/` by `wrap-up` after merge.
+All artifacts live in `tasks/current/` during active work and are archived to `tasks/archive/` by `archive-task` after merge.
 
 ---
 

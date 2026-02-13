@@ -61,7 +61,7 @@ Files in `.claude/project-instructions/` that adapt skills to a specific project
 
 ### Living Documents
 
-Hym produces three artifacts during a task's lifecycle. Each one builds on the previous — no artifact exists in isolation. They live in `tasks/current/`, accompany the task through implementation, and after merge are archived to `tasks/archive/` by `wrap-up`.
+Hym produces three artifacts during a task's lifecycle. Each one builds on the previous — no artifact exists in isolation. They live in `tasks/current/`, accompany the task through implementation, and after merge are archived to `tasks/archive/` by `archive-task`.
 
 #### 1. `tasks/current/blueprint.md` — The Design Document
 
@@ -122,7 +122,7 @@ start-work
                 └── generate-qa-steps    ← reads blueprint.md + recipe.md + git diff
                 │
                 └── address-pr-feedback  (loop until approved)
-                    └── wrap-up          ← merged PR → archives tasks/current/ to tasks/archive/, deletes branch
+                    └── archive-task     ← merged PR → archives tasks/current/ to tasks/archive/, deletes branch
 ```
 
 
@@ -177,7 +177,7 @@ start-work
 
 | Skill                      | Purpose                                                                    |
 | -------------------------- | -------------------------------------------------------------------------- |
-| `hym:wrap-up`              | Clean up after merge — archive `tasks/current/` to `tasks/archive/`, delete branch. |
+| `hym:archive-task`         | Clean up after merge — archive `tasks/current/` to `tasks/archive/`, delete branch. |
 | `hym:announce-release`     | Create a concise release summary message for team communication.           |
 | `hym:draft-release-thread` | Create a detailed per-ticket Slack thread explaining each change's impact. |
 
@@ -253,7 +253,7 @@ This project uses Hym to guide the development cycle.
         open-pr/
         generate-qa-steps/
         address-pr-feedback/
-        wrap-up/
+        archive-task/
         onboard/
         explain-workflows/
         set-up-environment/

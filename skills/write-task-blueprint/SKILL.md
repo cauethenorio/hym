@@ -68,7 +68,7 @@ Status: active
 - Created by this skill
 - Updated during implementation (decisions change, scope adjusts)
 - Transferred to the PR when `hym:open-pr` is invoked
-- Archived to `tasks/archive/` after merge by `hym:wrap-up`
+- Archived to `tasks/archive/` after merge by `hym:archive-task`
 
 ## Next Step
 

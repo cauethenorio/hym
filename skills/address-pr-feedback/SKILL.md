@@ -45,7 +45,7 @@ Process code review feedback with technical rigor. Evaluate each suggestion befo
 ## Next Step
 
 - More feedback to address → `hym:address-pr-feedback` again
-- PR approved and merged → suggest `hym:wrap-up` to clean up artifacts and branch
+- PR approved and merged → suggest `hym:archive-task` to clean up artifacts and branch
 
 ## Key Principles
 

@@ -42,7 +42,7 @@
         generate-qa-steps.md
         address-pr-feedback.md
         verify-work.md
-        wrap-up.md
+        archive-task.md
         deploy.md
         announce-release.md
 
@@ -272,7 +272,7 @@ Status: active
 - Created by `hym:write-task-blueprint`
 - Updated during implementation (decisions change, scope adjusts)
 - Transferred to the PR when `hym:open-pr` is invoked
-- Archived to `tasks/archive/` after merge by `hym:wrap-up`
+- Archived to `tasks/archive/` after merge by `hym:archive-task`
 
 **Inputs:** Accumulated context from `start-work` or standalone conversation
 **Outputs:** `tasks/current/blueprint.md` committed
@@ -448,7 +448,7 @@ Status: active
 
 ### Delivery
 
-#### hym:wrap-up
+#### hym:archive-task
 
 **Purpose:** Finalize work on a development branch after merge. Archive task artifacts for institutional memory.
 
@@ -633,7 +633,7 @@ hym:start-work
 - [ ] `hym:open-pr`
 - [ ] `hym:generate-qa-steps`
 - [ ] `hym:verify-work`
-- [ ] `hym:wrap-up`
+- [ ] `hym:archive-task`
 
 ### v1.1 — Onboarding, learning & migrated skills
 - [ ] `hym:onboard`
