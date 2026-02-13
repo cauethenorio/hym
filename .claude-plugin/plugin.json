@@ -7,5 +7,5 @@
   },
   "repository": "https://github.com/caue/hym",
   "license": "MIT",
-  "keywords": ["skills", "workflow", "development-cycle", "rfc", "implementation", "qa"]
+  "keywords": ["skills", "workflow", "development-cycle", "blueprint", "recipe", "tasks", "qa"]
 }

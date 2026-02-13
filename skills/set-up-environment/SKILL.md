@@ -29,6 +29,7 @@ Help the dev set up their local development environment. Check prerequisites, gu
    - Configure environment variables (.env files)
    - Set up local services (databases, caches, etc.)
    - Configure hosts file, certificates, etc.
+   - Create Hym tasks directories (`tasks/current/` and `tasks/archive/`) and ensure `tasks/current/` is in `.gitignore`
    - One step at a time, verifying each
 
 3. **Run verification checks**

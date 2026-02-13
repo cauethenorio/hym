@@ -23,7 +23,7 @@ Explain how Hym works and what skills are available. Teach the dev the developme
    - Explain how skills chain together
 
 2. **Show how to invoke skills**
-   - Example: `hym:start-work`, `hym:write-task-rfc`, etc.
+   - Example: `hym:start-work`, `hym:write-task-blueprint`, etc.
    - Explain that skills can be used standalone or in sequence
 
 3. **Explain project-specific adaptations**

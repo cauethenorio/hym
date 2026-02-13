@@ -10,10 +10,10 @@
 
 ### Concepts
 
-- **Workflow skills** — Skills that guide a phase of development (e.g., `start-work`, `write-task-rfc`, `debug-systematically`). Core logic that works in any project. Installed per project.
+- **Workflow skills** — Skills that guide a phase of development (e.g., `start-work`, `write-task-blueprint`, `debug-systematically`). Core logic that works in any project. Installed per project.
 - **Tool skills** — Skills that encapsulate how to use a specific tool (e.g., `linear`, `mongodb-atlas`, `playwright`). They abstract away whether the tool is an MCP server, a CLI, or another skill.
 - **Project instructions** — Files in `.claude/project-instructions/` that each project uses to adapt skills to its context (tools, conventions, workflows).
-- **Living documents** — The task RFC (`active-plan/rfc.md`) and implementation plan (`active-plan/implementation-plan.md`) accompany the task, are updated during implementation, and are transferred to the PR at the end.
+- **Living documents** — The task blueprint (`tasks/current/blueprint.md`) and recipe (`tasks/current/recipe.md`) accompany the task, are updated during implementation, and are transferred to the PR at the end.
 
 ---
 
@@ -33,8 +33,8 @@
         start-work.md
         create-ticket.md
         brainstorm.md
-        write-task-rfc.md
-        write-implementation-plan.md
+        write-task-blueprint.md
+        write-task-recipe.md
         execute-implementation.md
         develop-tdd.md
         debug-systematically.md
@@ -56,13 +56,21 @@
     project-instructions/            # Project-specific instructions
       start-work.md
       create-ticket.md
-      write-task-rfc.md
+      write-task-blueprint.md
       ...
 
-  active-plan/                       # Living documents
-    rfc.md
-    implementation-plan.md
-    qa-steps.md
+  tasks/                             # Living documents (per task)
+    current/
+      blueprint.md
+      recipe.md
+      qa-steps.md
+    archive/
+      YYYY-MM/
+        YYYY-MM-DD-TICKET-short-name/
+          summary.md
+          blueprint.md
+          recipe.md
+          qa-steps.md
 ```
 
 ### Rules
@@ -73,7 +81,7 @@
    - The project's CLAUDE.md (general context)
    - `.claude/project-instructions/<skill-name>.md` if it exists
 4. **Skills are independent** — each one can be invoked standalone.
-5. **Skills can invoke other skills** — `start-work` can call `create-ticket` and `write-task-rfc`.
+5. **Skills can invoke other skills** — `start-work` can call `create-ticket` and `write-task-blueprint`.
 6. **Context carries forward** — when a skill invokes another, accumulated context follows naturally through the conversation history.
 
 ---
@@ -129,6 +137,7 @@
    - Configure environment variables
    - Set up local services
    - Configure hosts file, certificates, etc.
+   - Create `tasks/current` and `tasks/archive` directories if they don't exist
 4. Run verification checks (build, tests, local server)
 5. Report what's working and what needs attention
 
@@ -166,9 +175,9 @@
 **Purpose:** Orchestrate the start of a task. Ensure context and understanding exist before any code is written.
 
 **Flow:**
-1. Read repository state (CLAUDE.md, recent commits, directory structure, `active-plan/rfc.md`)
+1. Read repository state (CLAUDE.md, recent commits, directory structure, `tasks/current/blueprint.md`)
 2. Read `.claude/project-instructions/start-work.md` if it exists
-3. If `active-plan/rfc.md` exists — ask the dev if they want to resume that work or start something new
+3. If `tasks/current/blueprint.md` exists — ask the dev if they want to resume that work or start something new
 4. Exploratory conversation — understand the task:
    - What needs to be done and why
    - Who asked for it, what's the motivation
@@ -185,10 +194,10 @@
    - Impact on existing functionality
    - Read relevant source files if it helps ask better questions
 7. Summarize understanding in 3-5 bullet points, confirm with the dev
-8. Invoke `hym:write-task-rfc` with all accumulated context
+8. Invoke `hym:write-task-blueprint` with all accumulated context
 
 **Inputs:** None required (everything comes from the conversation)
-**Outputs:** Ticket created/identified + context ready for RFC
+**Outputs:** Ticket created/identified + context ready for blueprint
 
 ---
 
@@ -218,7 +227,7 @@
 2. Understand the dev's idea through questions
 3. Propose 2-3 approaches with trade-offs
 4. Refine the chosen approach
-5. When mature enough — suggest next step (ticket, RFC, or more exploration)
+5. When mature enough — suggest next step (ticket, blueprint, or more exploration)
 
 **Inputs:** An idea, however vague
 **Outputs:** Clear direction, ready to become a ticket or design
@@ -227,26 +236,26 @@
 
 ### Design
 
-#### hym:write-task-rfc
+#### hym:write-task-blueprint
 
-**Purpose:** Create a lightweight RFC (Request for Comments) that aligns direction before coding. A living document that accompanies the task.
+**Purpose:** Create a lightweight blueprint that aligns direction before coding. A living document that accompanies the task.
 
 **Flow:**
-1. Read repository state and `.claude/project-instructions/write-task-rfc.md` if it exists
+1. Read repository state and `.claude/project-instructions/write-task-blueprint.md` if it exists
 2. Read relevant source code for what will be built
 3. Ask questions to gather solution requirements (one at a time, multiple choice when possible)
-4. Write the RFC section by section, validating each with the dev:
+4. Write the blueprint section by section, validating each with the dev:
    - Problem / Context
    - Proposed solution
    - Alternatives considered and trade-offs
    - Scope: what's in and what's out
    - Acceptance criteria
-5. Save to `active-plan/rfc.md`
+5. Save to `tasks/current/blueprint.md`
 6. Commit the document
 
 **Document format:**
 ```markdown
-# RFC: [task title]
+# Blueprint: [task title]
 Ticket: [link]
 Date: [YYYY-MM-DD]
 Status: active
@@ -260,33 +269,33 @@ Status: active
 ```
 
 **Lifecycle:**
-- Created by `hym:write-task-rfc`
+- Created by `hym:write-task-blueprint`
 - Updated during implementation (decisions change, scope adjusts)
 - Transferred to the PR when `hym:open-pr` is invoked
-- Removed from the repo after merge
+- Archived to `tasks/archive/` after merge by `hym:wrap-up`
 
 **Inputs:** Accumulated context from `start-work` or standalone conversation
-**Outputs:** `active-plan/rfc.md` committed
+**Outputs:** `tasks/current/blueprint.md` committed
 
 ---
 
-#### hym:write-implementation-plan
+#### hym:write-task-recipe
 
-**Purpose:** Create a detailed technical implementation plan from the RFC. This is what implementation agents follow.
+**Purpose:** Create a detailed technical recipe from the blueprint. This is what implementation agents follow.
 
 **Flow:**
-1. Read `active-plan/rfc.md` and project instructions
+1. Read `tasks/current/blueprint.md` and project instructions
 2. Read relevant source code (files that will be modified/created)
 3. Break the solution into ordered, concrete steps:
    - Which files to create/modify
    - Which tests to write
    - Dependencies between steps
    - Migrations needed
-4. Present the plan to the dev for approval
-5. Save to `active-plan/implementation-plan.md`
+4. Present the recipe to the dev for approval
+5. Save to `tasks/current/recipe.md`
 
-**Inputs:** Existing RFC
-**Outputs:** Detailed implementation plan
+**Inputs:** Existing blueprint
+**Outputs:** Detailed recipe
 
 ---
 
@@ -294,22 +303,22 @@ Status: active
 
 #### hym:execute-implementation
 
-**Purpose:** Execute the implementation plan by dispatching fresh subagents per task with two-stage review (spec compliance + code quality).
+**Purpose:** Execute the recipe by dispatching fresh subagents per task with two-stage review (spec compliance + code quality).
 
 **Flow:**
-1. Read `active-plan/implementation-plan.md` and project instructions
-2. For each task in the plan:
+1. Read `tasks/current/recipe.md` and project instructions
+2. For each task in the recipe:
    - Dispatch implementer subagent with full task text and context
    - Implementer builds, tests, and commits
-   - Dispatch spec reviewer subagent — verify code matches plan requirements
+   - Dispatch spec reviewer subagent — verify code matches recipe requirements
    - Dispatch code quality reviewer subagent — verify implementation quality
    - If reviewers find issues, implementer fixes and re-review loops until approved
 3. After all tasks: final cross-task quality review
 4. Invoke `hym:verify-before-completing` to check acceptance criteria
-5. Update `active-plan/rfc.md` if decisions change during implementation
+5. Update `tasks/current/blueprint.md` if decisions change during implementation
 
-**Inputs:** Existing implementation plan
-**Outputs:** Implemented code, updated plan
+**Inputs:** Existing recipe
+**Outputs:** Implemented code, updated recipe
 
 ---
 
@@ -325,7 +334,7 @@ Status: active
 5. Refactor if necessary
 6. Repeat until acceptance criteria are covered
 
-**Inputs:** Acceptance criteria (from RFC or conversation)
+**Inputs:** Acceptance criteria (from blueprint or conversation)
 **Outputs:** Tests + implementation
 
 ---
@@ -359,34 +368,34 @@ Status: active
 2. Verify preconditions:
    - Tests passing
    - Lint/build clean
-   - `active-plan/rfc.md` updated with final decisions
+   - `tasks/current/blueprint.md` updated with final decisions
 3. Invoke `hym:generate-qa-steps` to create the QA testing report
 4. Generate summary of what was done vs what was planned
 5. Identify points that deserve reviewer attention
-6. Include `active-plan/rfc.md` content in the PR description
+6. Include `tasks/current/blueprint.md` content in the PR description
 7. Attach QA steps per project instructions (PR description, comment, or ticket)
 8. Create the PR
 
-**Inputs:** Implemented code, RFC, plan
+**Inputs:** Implemented code, blueprint, recipe
 **Outputs:** PR ready for review with description and attention points
 
 ---
 
 #### hym:generate-qa-steps
 
-**Purpose:** Generate a detailed QA testing report based on the RFC, implementation plan, and actual code changes. Covers happy paths, edge cases, and areas touched by refactors.
+**Purpose:** Generate a detailed QA testing report based on the blueprint, recipe, and actual code changes. Covers happy paths, edge cases, and areas touched by refactors.
 
 **Flow:**
 1. Read project instructions and `.claude/project-instructions/generate-qa-steps.md` if it exists
-2. Read `active-plan/rfc.md` (acceptance criteria)
-3. Read `active-plan/implementation-plan.md` (what was planned)
+2. Read `tasks/current/blueprint.md` (acceptance criteria)
+3. Read `tasks/current/recipe.md` (what was planned)
 4. Analyze actual code changes (`git diff` against base branch)
 5. Generate QA steps covering:
    - Happy path for each acceptance criterion
    - Edge cases
    - Areas touched by refactors (regression risk)
    - Integration points affected
-6. Save to `active-plan/qa-steps.md`
+6. Save to `tasks/current/qa-steps.md`
 7. Ask the dev where to publish:
    - PR description/comment
    - Ticket comment
@@ -394,8 +403,8 @@ Status: active
 
 **Default behavior:** Invoked automatically by `hym:open-pr`. Can also be invoked standalone.
 
-**Inputs:** RFC, implementation plan, git diff
-**Outputs:** `active-plan/qa-steps.md`
+**Inputs:** Blueprint, recipe, git diff
+**Outputs:** `tasks/current/qa-steps.md`
 
 ---
 
@@ -427,12 +436,12 @@ Status: active
    - Tests pass
    - Build compiles
    - Lint clean
-   - Acceptance criteria from RFC are met
+   - Acceptance criteria from blueprint are met
 3. Compare what was implemented vs what was planned
 4. Only declare "done" if all verifications pass
 5. If something fails — report it, don't pretend it passed
 
-**Inputs:** Finalized code, RFC with acceptance criteria
+**Inputs:** Finalized code, blueprint with acceptance criteria
 **Outputs:** Verification report (pass/fail)
 
 ---
@@ -441,20 +450,24 @@ Status: active
 
 #### hym:wrap-up
 
-**Purpose:** Finalize work on a development branch after merge.
+**Purpose:** Finalize work on a development branch after merge. Archive task artifacts for institutional memory.
 
 **Flow:**
 1. Read project instructions
 2. Verify branch state:
    - Tests pass, build ok
    - PR approved and merged
-3. Clean up artifacts:
-   - Remove `active-plan/` directory (rfc.md, implementation-plan.md, qa-steps.md)
+3. Archive task artifacts:
+   - Generate `summary.md` from blueprint header (ticket, date, problem, solution)
+   - Move files from `tasks/current/` to `tasks/archive/YYYY-MM/YYYY-MM-DD-TICKET-short-name/`
+   - Commit the archive
+4. Clean up:
+   - Clean `tasks/current/`
    - Delete branch after merge
-4. Confirm everything is clean
+5. Confirm everything is clean
 
 **Inputs:** Branch with completed and merged work
-**Outputs:** Artifacts cleaned, branch deleted
+**Outputs:** Artifacts archived to `tasks/archive/`, branch deleted
 
 ---
 
@@ -573,7 +586,8 @@ Copy or link the Hym skills into the project:
 **Step 2 — Create the project instructions directory**
 ```bash
 mkdir -p .claude/project-instructions
-mkdir -p active-plan
+mkdir -p tasks/current tasks/archive
+echo 'tasks/current/' >> .gitignore
 ```
 
 **Step 3 — Create project instructions**
@@ -613,8 +627,8 @@ hym:start-work
 ### v1 — Core
 - [ ] `hym:start-work`
 - [ ] `hym:create-ticket`
-- [ ] `hym:write-task-rfc`
-- [ ] `hym:write-implementation-plan`
+- [ ] `hym:write-task-blueprint`
+- [ ] `hym:write-task-recipe`
 - [ ] `hym:execute-implementation`
 - [ ] `hym:open-pr`
 - [ ] `hym:generate-qa-steps`

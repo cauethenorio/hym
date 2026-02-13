@@ -7,22 +7,22 @@ description: Use when you need to generate QA testing steps from code changes, a
 
 ## Overview
 
-Generate a detailed QA testing report based on the RFC, implementation plan, and actual code changes. Covers happy paths, edge cases, and areas touched by refactors.
+Generate a detailed QA testing report based on the blueprint, recipe, and actual code changes. Covers happy paths, edge cases, and areas touched by refactors.
 
 ## Before Anything Else
 
 1. Read `.claude/project-instructions/generate-qa-steps.md` if it exists
    - This tells you the project's QA format, where to publish, testing focus
    - These instructions are ADDITIVE — they do not replace this skill
-2. Read `active-plan/rfc.md` (acceptance criteria)
-3. Read `active-plan/implementation-plan.md` (what was planned)
+2. Read `tasks/current/blueprint.md` (acceptance criteria)
+3. Read `tasks/current/recipe.md` (what was planned)
 
 ## Process
 
 1. **Analyze changes**
    - Run `git diff` against the base branch
    - Identify all modified files and their purpose
-   - Cross-reference with the RFC acceptance criteria
+   - Cross-reference with the blueprint acceptance criteria
    - Note areas touched by refactors (regression risk)
 
 2. **Generate QA steps**
@@ -56,7 +56,7 @@ Generate a detailed QA testing report based on the RFC, implementation plan, and
    ```
 
 4. **Save and publish**
-   - Save to `active-plan/qa-steps.md`
+   - Save to `tasks/current/qa-steps.md`
    - Ask the dev where to publish:
      - PR description/comment
      - Ticket comment

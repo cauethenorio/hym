@@ -1,18 +1,18 @@
 ---
 name: execute-implementation
-description: Use when you have an approved implementation plan and are ready to start coding. Use after write-implementation-plan. Dispatches fresh subagents per task with two-stage review.
+description: Use when you have an approved recipe and are ready to start coding. Use after write-task-recipe. Dispatches fresh subagents per task with two-stage review.
 ---
 
 # Execute Implementation
 
-Execute the implementation plan by dispatching a fresh subagent per task, with two-stage review after each: spec compliance review first, then code quality review.
+Execute the recipe by dispatching a fresh subagent per task, with two-stage review after each: spec compliance review first, then code quality review.
 
 **Core principle:** Fresh subagent per task + two-stage review (spec then quality) = high quality, fast iteration
 
 ## Before Anything Else
 
-1. Read `active-plan/implementation-plan.md` — this is what you're executing
-2. Read `active-plan/rfc.md` — this is the context and acceptance criteria
+1. Read `tasks/current/recipe.md` — this is what you're executing
+2. Read `tasks/current/blueprint.md` — this is the context and acceptance criteria
 3. Read CLAUDE.md and `.claude/project-instructions/execute-implementation.md` if it exists
    - These instructions are ADDITIVE — they do not replace this skill
 
@@ -76,7 +76,7 @@ digraph process {
 ```
 You: I'm using Execute Implementation to execute this plan.
 
-[Read plan file once: active-plan/implementation-plan.md]
+[Read plan file once: tasks/current/recipe.md]
 [Extract all 5 tasks with full text and context]
 [Create tasks via TaskCreate]
 
@@ -212,7 +212,7 @@ Implementation is verified and ready. Suggest: open the PR with `hym:open-pr`.
 ## Integration
 
 **Required workflow skills:**
-- **hym:write-implementation-plan** - Creates the plan this skill executes
+- **hym:write-task-recipe** - Creates the recipe this skill executes
 - **hym:verify-before-completing** - Invoked internally after all tasks to check acceptance criteria
 
 **Suggested next step:**

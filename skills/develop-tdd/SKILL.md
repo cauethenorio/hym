@@ -14,7 +14,7 @@ Implement functionality following TDD — tests first, then code, then refactor.
 1. Read `.claude/project-instructions/develop-tdd.md` if it exists
    - This tells you testing frameworks, conventions, file locations
    - These instructions are ADDITIVE — they do not replace this skill
-2. Read `active-plan/rfc.md` for acceptance criteria (if it exists)
+2. Read `tasks/current/blueprint.md` for acceptance criteria (if it exists)
 
 ## Process
 

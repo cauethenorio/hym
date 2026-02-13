@@ -45,7 +45,7 @@ Create a ticket in the project's issue tracking system from collected context.
 
 ## Next Step
 
-After the ticket is created, suggest: `hym:write-task-rfc` to design the solution.
+After the ticket is created, suggest: `hym:write-task-blueprint` to design the solution.
 
 ## Guidelines
 

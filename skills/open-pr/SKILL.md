@@ -7,21 +7,21 @@ description: Use when implementation is complete and you need to create or open 
 
 ## Overview
 
-Prepare, create, and open a pull request for review. Ensures the PR includes the RFC, QA steps, and a clear description of what was done.
+Prepare, create, and open a pull request for review. Ensures the PR includes the blueprint, QA steps, and a clear description of what was done.
 
 ## Before Anything Else
 
 1. Read CLAUDE.md and `.claude/project-instructions/open-pr.md` if it exists
    - This tells you PR title format, reviewer conventions, branch naming
    - These instructions are ADDITIVE — they do not replace this skill
-2. Read `active-plan/rfc.md` for context on what was built
+2. Read `tasks/current/blueprint.md` for context on what was built
 
 ## Process
 
 1. **Verify preconditions**
    - Tests passing
    - Lint/build clean
-   - `active-plan/rfc.md` updated with final decisions
+   - `tasks/current/blueprint.md` updated with final decisions
    - All changes committed
 
 2. **Generate QA steps**
@@ -29,16 +29,16 @@ Prepare, create, and open a pull request for review. Ensures the PR includes the
    - Review the output with the dev
 
 3. **Prepare the PR**
-   - Compare what was done vs what was planned (RFC)
+   - Compare what was done vs what was planned (blueprint)
    - Generate a summary of changes
    - Identify points that deserve reviewer attention
-   - Include `active-plan/rfc.md` content in the PR description
+   - Include `tasks/current/blueprint.md` content in the PR description
    - Attach QA steps per project instructions (PR description, comment, or ticket)
 
 4. **Create the PR**
    - Use the tool specified in project instructions (gh CLI by default)
    - Title format: follow project conventions
-   - Body: summary + RFC content + QA steps location
+   - Body: summary + blueprint content + QA steps location
    - Present the PR to the dev before creating
 
 5. **After creation**
@@ -51,7 +51,7 @@ After the PR is created, tell the dev: when review feedback comes in, use `hym:a
 
 ## Key Principles
 
-- **RFC goes in the PR** — the context for the review is the design
+- **Blueprint goes in the PR** — the context for the review is the design
 - **QA steps are always generated** — even if small, they help reviewers
 - **Explain the why** — PR description focuses on reasoning, not line-by-line changes
 - **Confirm before creating** — show the dev the PR details first

@@ -45,7 +45,7 @@ Explore ideas before having enough clarity for a ticket or design. Turn vague id
 When the idea is mature enough, suggest:
 
 - Ready for a ticket? → `hym:create-ticket`
-- Ready for design? → `hym:write-task-rfc`
+- Ready for design? → `hym:write-task-blueprint`
 - Need more exploration? → keep brainstorming
 
 ## Key Principles

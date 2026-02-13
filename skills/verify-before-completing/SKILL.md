@@ -13,7 +13,7 @@ Final check before declaring work as complete. Evidence before assertion. Never 
 
 1. Read `.claude/project-instructions/verify-before-completing.md` if it exists
    - These instructions are ADDITIVE — they do not replace this skill
-2. Read `active-plan/rfc.md` for acceptance criteria
+2. Read `tasks/current/blueprint.md` for acceptance criteria
 
 ## Process
 
@@ -24,20 +24,20 @@ Final check before declaring work as complete. Evidence before assertion. Never 
    - Type checks pass (if applicable)
 
 2. **Check acceptance criteria**
-   - For each criterion in the RFC:
+   - For each criterion in the blueprint:
      - Is it implemented?
      - Is it tested?
      - Does it work?
    - If any criterion is not met, report it
 
 3. **Compare plan vs reality**
-   - What was planned in `active-plan/implementation-plan.md`
+   - What was planned in `tasks/current/recipe.md`
    - What was actually implemented
    - Note any deviations and whether they were justified
 
-4. **Update RFC if implementation deviated**
-   - If the implementation differs from what the RFC describes (scope changed, approach changed, criteria adjusted):
-     - Update the relevant sections in `active-plan/rfc.md` to reflect reality
+4. **Update blueprint if implementation deviated**
+   - If the implementation differs from what the blueprint describes (scope changed, approach changed, criteria adjusted):
+     - Update the relevant sections in `tasks/current/blueprint.md` to reflect reality
      - Append a changelog entry to the end of the document:
        ```markdown
        ## Changelog
@@ -49,7 +49,7 @@ Final check before declaring work as complete. Evidence before assertion. Never 
 5. **Report**
    - List each verification and its result (pass/fail)
    - List each acceptance criterion and its status
-   - List any RFC updates made (if applicable)
+   - List any blueprint updates made (if applicable)
    - Be honest — if something failed, say so
 
 6. **Decision**

@@ -10,7 +10,7 @@ No code is written without context, understanding, and a documented design. Hym 
 
 Most AI coding tools help you write code. Hym helps you **build software** — the whole process:
 
-- **Before coding:** Understand the task, create a ticket, write a lightweight RFC, plan the implementation
+- **Before coding:** Understand the task, create a ticket, write a lightweight blueprint, plan the recipe
 - **During coding:** Follow TDD, debug systematically, execute plans step by step with review checkpoints
 - **After coding:** Open PRs with context, generate QA steps, address review feedback, clean up after merge
 - **Communication:** Announce releases, draft detailed release threads for the team
@@ -47,7 +47,7 @@ This loads the skill map into context. Then tell Hym what you need:
 
 ### Workflow Skills
 
-Skills that guide a phase of development. They define **what** to do, not how to use specific tools. Examples: `start-work`, `write-task-rfc`, `debug-systematically`.
+Skills that guide a phase of development. They define **what** to do, not how to use specific tools. Examples: `start-work`, `write-task-blueprint`, `debug-systematically`.
 
 ### Tool Skills
 
@@ -61,7 +61,48 @@ Files in `.claude/project-instructions/` that adapt skills to a specific project
 
 ### Living Documents
 
-The task RFC (`active-plan/rfc.md`) and implementation plan (`active-plan/implementation-plan.md`) accompany the task through its lifecycle. They're created during design, updated during implementation, transferred to the PR, and removed after merge.
+Hym produces three artifacts during a task's lifecycle. Each one builds on the previous — no artifact exists in isolation. They live in `tasks/current/`, accompany the task through implementation, and after merge are archived to `tasks/archive/` by `wrap-up`.
+
+#### 1. `tasks/current/blueprint.md` — The Design Document
+
+**Produced by:** `write-task-blueprint`
+**Consumed by:** `write-task-recipe`, `execute-implementation`, `verify-before-completing`, `open-pr`, `generate-qa-steps`
+
+A lightweight blueprint (1-2 pages) that aligns direction before coding. Contains:
+
+- **Problem / Context** — what's broken or missing
+- **Proposed Solution** — the chosen direction
+- **Alternatives and Trade-offs** — what else was considered and why it was rejected
+- **Scope** — what's in and what's explicitly out
+- **Acceptance Criteria** — verifiable outcomes that define "done"
+
+This is a living document — it gets updated during implementation as understanding deepens, then gets transferred into the PR description by `open-pr`, and after merge archived to `tasks/archive/` for institutional memory. It's the source of truth that carries context forward to every downstream skill.
+
+#### 2. `tasks/current/recipe.md` — The Execution Playbook
+
+**Produced by:** `write-task-recipe`
+**Consumed by:** `execute-implementation`, `verify-before-completing`, `generate-qa-steps`
+
+Turns the blueprint's "what to build" into ordered, concrete steps — which files to create/modify, what tests to write, in what order. Each step is:
+
+- **Concrete** — "modify handler X in file Y", not "update the API"
+- **Testable** — includes what to verify after each step
+- **Ordered by dependency** — steps that depend on others come after
+- **Small** — completable in one sitting
+
+This is what `execute-implementation` dispatches to subagents — one step at a time, each reviewed for spec compliance and code quality before moving on.
+
+#### 3. `tasks/current/qa-steps.md` — The QA Testing Report
+
+**Produced by:** `generate-qa-steps`
+**Consumed by:** `open-pr` (attached to the PR description)
+
+Generated after implementation by cross-referencing three things: the blueprint's acceptance criteria, the recipe, and the actual `git diff`. Contains:
+
+- **Happy path steps** — step-by-step instructions for each acceptance criterion, followable by a QA person without asking questions
+- **Edge cases** — boundary conditions and unusual inputs to check
+- **Regression checks** — verification that areas touched by refactors still work
+- **Prerequisites** — setup needed before testing
 
 ## The Workflow
 
@@ -70,34 +111,20 @@ The task RFC (`active-plan/rfc.md`) and implementation plan (`active-plan/implem
 ```
 start-work
 ├── create-ticket                        (if no ticket exists)
-└── write-task-rfc                       → produces active-plan/rfc.md
-    └── write-implementation-plan        → produces active-plan/implementation-plan.md
+└── write-task-blueprint                 → produces tasks/current/blueprint.md
+    └── write-task-recipe                → produces tasks/current/recipe.md
         └── execute-implementation       (fresh subagent per task + two-stage review)
             ├── develop-tdd              (per task, when writing new code)
             ├── debug-systematically     (per task, when something fails)
             └── verify-before-completing (internal, after all tasks + final review)
             │
-            └── open-pr                  ← reads rfc.md + implemented code
-                └── generate-qa-steps    ← reads rfc.md + implementation-plan.md + git diff
+            └── open-pr                  ← reads blueprint.md + implemented code
+                └── generate-qa-steps    ← reads blueprint.md + recipe.md + git diff
                 │
                 └── address-pr-feedback  (loop until approved)
-                    └── wrap-up          ← merged PR → removes active-plan/, deletes branch
+                    └── wrap-up          ← merged PR → archives tasks/current/ to tasks/archive/, deletes branch
 ```
 
-### Artifact Flow
-
-```
-rfc.md ──────────────→ write-implementation-plan, execute-implementation,
-                       verify-before-completing,
-                       open-pr, generate-qa-steps
-
-implementation-plan.md → execute-implementation,
-                         verify-before-completing, generate-qa-steps
-
-qa-steps.md ──────────→ open-pr (attached to PR description)
-```
-
-All artifacts live in `active-plan/` and are removed by `wrap-up` after merge.
 
 ## Skills Reference
 
@@ -125,8 +152,8 @@ All artifacts live in `active-plan/` and are removed by `wrap-up` after merge.
 | ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
 | `hym:brainstorm`                | Creative exploration before committing to a direction. Proposes approaches with trade-offs.                                    |
 | `hym:create-ticket`             | Create a ticket in the project's issue tracker from collected context.                                                         |
-| `hym:write-task-rfc`            | Write a lightweight RFC — problem, proposed solution, alternatives, scope, acceptance criteria. Saved to `active-plan/rfc.md`. |
-| `hym:write-implementation-plan` | Break the RFC into ordered, concrete implementation steps. Saved to `active-plan/implementation-plan.md`.                      |
+| `hym:write-task-blueprint`      | Write a lightweight blueprint — problem, proposed solution, alternatives, scope, acceptance criteria. Saved to `tasks/current/blueprint.md`. |
+| `hym:write-task-recipe`         | Break the blueprint into ordered, concrete implementation steps. Saved to `tasks/current/recipe.md`.                                         |
 
 ### Implementation
 
@@ -142,15 +169,15 @@ All artifacts live in `active-plan/` and are removed by `wrap-up` after merge.
 | Skill                          | Purpose                                                                                      |
 | ------------------------------ | -------------------------------------------------------------------------------------------- |
 | `hym:verify-before-completing` | Final verification before declaring work complete — tests, build, lint, acceptance criteria. |
-| `hym:open-pr`                  | Prepare and create a PR with RFC context, QA steps, and reviewer attention points.           |
-| `hym:generate-qa-steps`        | Generate QA testing steps from the RFC, plan, and actual code changes.                       |
+| `hym:open-pr`                  | Prepare and create a PR with blueprint context, QA steps, and reviewer attention points.     |
+| `hym:generate-qa-steps`        | Generate QA testing steps from the blueprint, recipe, and actual code changes.               |
 | `hym:address-pr-feedback`      | Process code review feedback with technical rigor — evaluate before implementing.            |
 
 ### Delivery & Communication
 
 | Skill                      | Purpose                                                                    |
 | -------------------------- | -------------------------------------------------------------------------- |
-| `hym:wrap-up`              | Clean up after merge — remove `active-plan/`, delete branch.               |
+| `hym:wrap-up`              | Clean up after merge — archive `tasks/current/` to `tasks/archive/`, delete branch. |
 | `hym:announce-release`     | Create a concise release summary message for team communication.           |
 | `hym:draft-release-thread` | Create a detailed per-ticket Slack thread explaining each change's impact. |
 
@@ -201,7 +228,7 @@ This project uses Hym to guide the development cycle.
 
 - Tickets: Linear (use hym:linear)
 - Branches: feature/<ticket-id>-<short-description>
-- PRs: Squash merge, include RFC in description
+- PRs: Squash merge, include blueprint in description
 - Deploy: Merge to main triggers deploy
 ```
 
@@ -216,8 +243,8 @@ This project uses Hym to guide the development cycle.
         start-work/
         create-ticket/
         brainstorm/
-        write-task-rfc/
-        write-implementation-plan/
+        write-task-blueprint/
+        write-task-recipe/
         execute-implementation/
         develop-tdd/
         debug-systematically/
@@ -246,10 +273,18 @@ This project uses Hym to guide the development cycle.
       create-ticket.md
       ...
 
-  active-plan/                       # Living documents (per task)
-    rfc.md
-    implementation-plan.md
-    qa-steps.md
+  tasks/                             # Living documents (per task)
+    current/
+      blueprint.md
+      recipe.md
+      qa-steps.md
+    archive/
+      YYYY-MM/
+        YYYY-MM-DD-TICKET-short-name/
+          summary.md
+          blueprint.md
+          recipe.md
+          qa-steps.md
 ```
 
 ### Design Principles
@@ -275,7 +310,7 @@ Both projects believe that AI agents produce better work when guided by structur
 
 **Scope of the lifecycle.** Superpowers covers brainstorm-through-merge: design, plan, execute, test, review, finish the branch. Hym extends the lifecycle in both directions — earlier (ticket creation, onboarding, codebase exploration) and later (QA step generation, PR feedback loops, post-merge cleanup, release announcements). Superpowers is laser-focused on the engineering cycle; Hym treats development as a broader process that includes project management and team communication.
 
-**Skills library vs. workflow system.** Superpowers skills are independent units that chain through convention — each skill recommends the next, but there's no formal orchestration. Hym defines an explicit workflow with a dependency graph and artifact pipeline. Skills produce named artifacts (`active-plan/rfc.md`, `active-plan/implementation-plan.md`, `active-plan/qa-steps.md`) that are consumed by downstream skills and cleaned up after merge. This makes Hym more opinionated about the order of operations but also more predictable.
+**Skills library vs. workflow system.** Superpowers skills are independent units that chain through convention — each skill recommends the next, but there's no formal orchestration. Hym defines an explicit workflow with a dependency graph and artifact pipeline. Skills produce named artifacts (`tasks/current/blueprint.md`, `tasks/current/recipe.md`, `tasks/current/qa-steps.md`) that are consumed by downstream skills and archived after merge. This makes Hym more opinionated about the order of operations but also more predictable.
 
 **Tool integration.** Superpowers stays within the git-and-code boundary — it doesn't address how to interact with issue trackers, databases, browsers, or messaging tools. Hym separates workflow skills (what to do) from tool skills (how to do it with Linear, MongoDB Atlas, Playwright, Slack, etc.), letting project instructions wire them together. This makes Hym more adaptable to different toolchains but also more complex to configure.
 

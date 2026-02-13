@@ -15,14 +15,14 @@ Orchestrate the start of a task. Ensure context and understanding exist before a
    - CLAUDE.md (root + subprojects)
    - Recent commits (`git log --oneline -20`)
    - Directory structure
-   - Check if `active-plan/rfc.md` exists
+   - Check if `tasks/current/blueprint.md` exists
 
 2. Read project instructions:
    - Look for `.claude/project-instructions/start-work.md`
    - If found, incorporate those instructions into your behavior
    - These instructions are ADDITIVE — they do not replace this skill
 
-3. If `active-plan/rfc.md` already exists:
+3. If `tasks/current/blueprint.md` already exists:
    - Tell the dev there's active work in progress
    - Show a brief summary of what it contains
    - Ask: continue that work, or start something new?
@@ -73,7 +73,7 @@ When understanding is sufficient:
 
 - Summarize what you understood in 3-5 bullet points
 - Ask the dev to confirm
-- If confirmed — invoke `hym:write-task-rfc` with all accumulated context
+- If confirmed — invoke `hym:write-task-blueprint` with all accumulated context
 - If not — keep asking until alignment is reached
 
 ## Key Principles
@@ -81,7 +81,7 @@ When understanding is sufficient:
 - **Read before asking** — always read repo state before the first question
 - **Conversation, not interrogation** — this should feel natural
 - **One question at a time** — never overwhelm
-- **Respect what exists** — if there's an active plan, acknowledge it
+- **Respect what exists** — if there's active work, acknowledge it
 - **Project instructions are additive** — they enrich, never override
 - **Don't force links** — a verbal description is valid context
 - **Know when to stop asking** — move to design when clarity is sufficient

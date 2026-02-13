@@ -33,18 +33,18 @@ If the dev doesn't know where to start, suggest:
 ```
 start-work
 ├── create-ticket                        (if no ticket exists)
-└── write-task-rfc                       → produces active-plan/rfc.md
-    └── write-implementation-plan        → produces active-plan/implementation-plan.md
+└── write-task-blueprint                 → produces tasks/current/blueprint.md
+    └── write-task-recipe                → produces tasks/current/recipe.md
         └── execute-implementation       (fresh subagent per task + two-stage review)
             ├── develop-tdd              (per task, when writing new code)
             ├── debug-systematically     (per task, when something fails)
             └── verify-before-completing (internal, after all tasks + final review)
             │
-            └── open-pr                  ← reads rfc.md + implemented code
-                └── generate-qa-steps    ← reads rfc.md + implementation-plan.md + git diff
+            └── open-pr                  ← reads blueprint.md + implemented code
+                └── generate-qa-steps    ← reads blueprint.md + recipe.md + git diff
                 │
                 └── address-pr-feedback  (loop until approved)
-                    └── wrap-up          ← merged PR → removes active-plan/, deletes branch
+                    └── wrap-up          ← merged PR → archives tasks/current/ to tasks/archive/, deletes branch
 ```
 
 ### After Deploy
@@ -55,7 +55,7 @@ start-work
 ### Standalone Skills (usable at any point)
 
 - `hym:explore` — Freeform codebase exploration. No artifacts, just understanding.
-- `hym:brainstorm` — Creative exploration before committing to a direction. Suggests → `create-ticket` or `write-task-rfc` when the idea is mature.
+- `hym:brainstorm` — Creative exploration before committing to a direction. Suggests → `create-ticket` or `write-task-blueprint` when the idea is mature.
 - `hym:debug-systematically` — Can be invoked standalone for any bug, not just during implementation.
 - `hym:develop-tdd` — Can be invoked standalone for any feature, not just during plan execution.
 
@@ -70,17 +70,17 @@ onboard
 ### Artifact Flow
 
 ```
-rfc.md ──────────────→ write-implementation-plan, execute-implementation,
-                       verify-before-completing,
-                       open-pr, generate-qa-steps
+blueprint.md ─────────→ write-task-recipe, execute-implementation,
+                        verify-before-completing,
+                        open-pr, generate-qa-steps
 
-implementation-plan.md → execute-implementation,
-                         verify-before-completing, generate-qa-steps
+recipe.md ────────────→ execute-implementation,
+                        verify-before-completing, generate-qa-steps
 
 qa-steps.md ──────────→ open-pr (attached to PR description)
 ```
 
-All artifacts live in `active-plan/` and are removed by `wrap-up` after merge.
+All artifacts live in `tasks/current/` during active work and are archived to `tasks/archive/` by `wrap-up` after merge.
 
 ---
 

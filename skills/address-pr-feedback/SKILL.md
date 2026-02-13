@@ -13,7 +13,7 @@ Process code review feedback with technical rigor. Evaluate each suggestion befo
 
 1. Read `.claude/project-instructions/address-pr-feedback.md` if it exists
    - These instructions are ADDITIVE — they do not replace this skill
-2. Read `active-plan/rfc.md` for context on design decisions
+2. Read `tasks/current/blueprint.md` for context on design decisions
 
 ## Process
 
@@ -24,7 +24,7 @@ Process code review feedback with technical rigor. Evaluate each suggestion befo
 2. **Evaluate each suggestion**
    - Understand what is being asked
    - Evaluate if it makes sense technically
-   - Cross-reference with the RFC — does the suggestion contradict a design decision?
+   - Cross-reference with the blueprint — does the suggestion contradict a design decision?
    - Consider: does this improve the code or is it preference?
 
 3. **For each suggestion, decide:**
@@ -51,6 +51,6 @@ Process code review feedback with technical rigor. Evaluate each suggestion befo
 
 - **Technical rigor over politeness** — don't implement bad suggestions just to avoid conflict
 - **Understand before acting** — never implement something you don't understand
-- **RFC is context** — if a reviewer questions a design decision, the RFC explains why
+- **Blueprint is context** — if a reviewer questions a design decision, the blueprint explains why
 - **Verify after changes** — run tests after addressing feedback
 - **One commit per logical group** — don't squash all feedback into one commit
